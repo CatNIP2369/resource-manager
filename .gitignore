@@ -1,0 +1,13 @@
+/build/
+/bin/
+/out/
+*.o
+*.obj
+*.exe
+*.out
+
+# IDEs & Editors
+.vscode/
+.vs/
+*.user
+.clang-d/
