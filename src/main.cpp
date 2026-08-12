@@ -1,25 +1,33 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_map>
+#include <tuple>
 class Texture;
 class SoundEffect;
 class ResourceManager
 {
     public:
     template <typename T>
-        T* load(std::string& path);
+        T* load(std::string& path)
+        {
+            auto& map = std::get<std::unordered_map<std::string, std::shared_ptr<T>>>(m_caches);
+            map.insert({path,new T{}});
+            return std::shared_ptr<T>(map.at("path")) ;
+        }
     private:
-        std::unordered_map<std::string,Texture > textures;
-        std::unordered_map<std::string, SoundEffect> soundeffects;
-
+        std::tuple
+        <
+            std::unordered_map<std::string,std::shared_ptr<Texture>> ,
+            std::unordered_map<std::string, std::shared_ptr<SoundEffect>>
+        > m_caches;
 };
 class Texture
 {
     template <typename T>
     friend T* ResourceManager::load(std::string& path);
 private:
-    Texture(std::string path)
-    : m_path(path)
+    Texture()
     {
         std::cout << "Texture constructed.\n";
     }
@@ -27,7 +35,6 @@ private:
     {
         std::cout << "Texture destructed.\n";
     }
-    std::string m_path;
 };
 
 class SoundEffect
@@ -35,8 +42,7 @@ class SoundEffect
     template <typename T>
     friend T* ResourceManager::load(std::string& path);
     private:
-    SoundEffect(std::string path)
-    : m_path(path)
+    SoundEffect()
     {
         std::cout << "SoundEffect constructed.\n";
     }
@@ -44,7 +50,6 @@ class SoundEffect
     {
         std::cout << "SoundEffect destructed.\n";
     }
-    std::string m_path;
 };
 
 
