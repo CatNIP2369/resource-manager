@@ -9,23 +9,23 @@ class ResourceManager
 {
     public:
     template <typename T>
-        T* load(std::string& path)
+        T& load(std::string& path)
         {
-            auto& map = std::get<std::unordered_map<std::string, std::shared_ptr<T>>>(m_caches);
-            map.insert({path,new T{}});
-            return std::shared_ptr<T>(map.at("path")) ;
+            auto& map = std::get<std::unordered_map<std::string, std::unique_ptr<T>>>(m_caches);
+            map.insert({path,std::move(std::unique_ptr<T>(T{}))});
+            return (*(map.at(path))) ;
         }
     private:
         std::tuple
         <
-            std::unordered_map<std::string,std::shared_ptr<Texture>> ,
-            std::unordered_map<std::string, std::shared_ptr<SoundEffect>>
+            std::unordered_map<std::string,std::unique_ptr<Texture>> ,
+            std::unordered_map<std::string, std::unique_ptr<SoundEffect>>
         > m_caches;
 };
 class Texture
 {
     template <typename T>
-    friend T* ResourceManager::load(std::string& path);
+    friend T& ResourceManager::load(std::string& path);
 private:
     Texture()
     {
@@ -40,7 +40,7 @@ private:
 class SoundEffect
 {
     template <typename T>
-    friend T* ResourceManager::load(std::string& path);
+    friend T& ResourceManager::load(std::string& path);
     private:
     SoundEffect()
     {
