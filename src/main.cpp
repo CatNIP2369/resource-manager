@@ -9,7 +9,7 @@ class ResourceManager
 {
     public:
     template <typename T>
-        T& load(std::string path)
+        T& request(std::string path)
         {
             auto& map = std::get<std::unordered_map<std::string, std::unique_ptr<T>>>(m_caches);
             if (map.find(path) == map.end())
@@ -19,6 +19,15 @@ class ResourceManager
             }
             else
                 {return *(map.at(path));}
+        }
+    template<typename T>
+        void unload()
+        {
+
+            auto& mapa = std::get<std::unordered_map<std::string, std::unique_ptr<Texture>>>(m_caches);
+            auto& mapb = std::get<std::unordered_map<std::string, std::unique_ptr<SoundEffect>>>(m_caches);
+            mapa.clear();
+            mapb.clear();
         }
     private:
         std::tuple
@@ -30,7 +39,7 @@ class ResourceManager
 class Texture
 {
     template <typename T>
-    friend T& ResourceManager::load(std::string path);
+    friend T& ResourceManager::request(std::string path);
     friend struct std::default_delete<Texture>;
 private:
     Texture()
@@ -46,7 +55,7 @@ private:
 class SoundEffect
 {
     template <typename T>
-    friend T& ResourceManager::load(std::string path);
+    friend T& ResourceManager::request(std::string path);
     friend struct std::default_delete<SoundEffect>;
     private:
     SoundEffect()
@@ -79,5 +88,6 @@ class Entity
 int main()
 {
     ResourceManager resourcemanager;
-    resourcemanager.load<Texture>("player.png");
+    resourcemanager.request<Texture>("player.png");
+    resourcemanager.request<SoundEffect>("player.png");
 }
