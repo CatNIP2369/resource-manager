@@ -12,8 +12,13 @@ class ResourceManager
         T& load(std::string& path)
         {
             auto& map = std::get<std::unordered_map<std::string, std::unique_ptr<T>>>(m_caches);
-            map.insert({path,std::move(std::unique_ptr<T>())});
-            return (*(map.at(path))) ;
+            if (map.find(path) == map.end())
+            {
+                map.insert({path,std::move(std::unique_ptr<T>(new T{}))});
+                return (*(map.at(path))) ;
+            }
+            else
+                {return *(map.at(path));}
         }
     private:
         std::tuple
