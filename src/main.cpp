@@ -20,7 +20,7 @@ class ResourceManager
             else
                 {return *(map.at(path));}
         }
-    template<typename T>
+
         void unload()
         {
 
