@@ -9,7 +9,7 @@ class ResourceManager
 {
     public:
     template <typename T>
-        T& load(std::string& path)
+        T& load(std::string path)
         {
             auto& map = std::get<std::unordered_map<std::string, std::unique_ptr<T>>>(m_caches);
             if (map.find(path) == map.end())
@@ -30,7 +30,8 @@ class ResourceManager
 class Texture
 {
     template <typename T>
-    friend T& ResourceManager::load(std::string& path);
+    friend T& ResourceManager::load(std::string path);
+    friend struct std::default_delete<Texture>;
 private:
     Texture()
     {
@@ -45,7 +46,8 @@ private:
 class SoundEffect
 {
     template <typename T>
-    friend T& ResourceManager::load(std::string& path);
+    friend T& ResourceManager::load(std::string path);
+    friend struct std::default_delete<SoundEffect>;
     private:
     SoundEffect()
     {
@@ -76,5 +78,6 @@ class Entity
 
 int main()
 {
-
+    ResourceManager resourcemanager;
+    resourcemanager.load<Texture>("player.png");
 }
